@@ -1,6 +1,8 @@
 function output = Check_neighbor(output_img, i, j, count)
-%CHECK_NEIGHBOR Summary of this function goes here
-%   Detailed explanation goes here
+%CHECK_NEIGHBOR Use the neighbor pixels to correct the pixel(i,j)
+%   output_img : the source image
+%   i, j : location
+%   count : this picture's avg
 
     size = output_img;
     if i-1 > 0
