@@ -3,7 +3,7 @@ clear;
 % Parameters
 intput_path = '';
 input_file = 'Lenna.bmp';
-output_path = 'result02/';
+output_path = 'result01/';
 output_file = 'result_';
 % (K,N), max N = 8;
 K = 4;
@@ -29,12 +29,18 @@ input_img( height, width_n*K ) = 0;
 input_img( :, (width+1):(width_n*K) ) = rand(height, (width_n*K) - width);
 width = width_n*K;
 
-
 % 
-% scramble the input image
+% Narrow the pixel value area
+% Scramble the input image
 for i = 1:height
     for j = 1:width
-        input_img(i, j) = mod(input_img(i, j) + i*j + j, 251);
+%         if input_img(i, j) < 3
+%             input_img(i, j) = 3;
+%         end
+%         if input_img(i, j) > 253
+%             input_img(i, j) = 253;
+%         end
+%         input_img(i, j) = mod(input_img(i, j) + i*j + j, 256);
     end
 end
 imwrite(uint8(input_img), 'Lenna_scrambled.bmp');
@@ -50,7 +56,7 @@ for i = 1:height
             for y = 1:K
                 output_img(x, i, j) = output_img(x, i, j) + ( input_img(i, (j-1)*K+y)* x^(y-1) );
             end
-            output_img(x, i, j) = mod(output_img(x, i, j), 256);
+            output_img(x, i, j) = mod(output_img(x, i, j), 251);
         end
     end
 end
