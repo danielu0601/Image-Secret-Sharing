@@ -7,7 +7,7 @@ function sol = Solve_Eq(K, N, F)
 %   F : array of f(x)
 %   result : array of result
 
-    % initial matrix
+    % Initial matrix
     L(:, K+1) = F;
     for i = 1:K
         for j = 1:K
@@ -15,7 +15,7 @@ function sol = Solve_Eq(K, N, F)
         end
     end
     
-    % make the matrix upper triangle
+    % Make the matrix upper triangle
     for i = 1:K 
         for j = i+1:K
             while( L(j,i) >= L(i,i) )
@@ -26,8 +26,7 @@ function sol = Solve_Eq(K, N, F)
         end
     end
     
-    
-    % calculate ans from bottom to top
+    % Calculate ans from bottom to top
     for i = K:-1:1
         L(i,K+1) =  mod(L(i,K+1), 251);
         while mod(L(i,K+1), L(i,i)) ~= 0
@@ -45,9 +44,4 @@ function sol = Solve_Eq(K, N, F)
     
     % Assign result to output
     sol = reshape( L(:,K+1), 1, K );
-    
-    if min(sol) < 0 || max(sol) > 255
-        reshape( F, 1, K )
-        sol
-    end
 end
