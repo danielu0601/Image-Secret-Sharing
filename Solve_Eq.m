@@ -7,6 +7,8 @@ function sol = Solve_Eq(K, N, F)
 %   F : array of f(x)
 %   result : array of result
 
+    N = sort(N);
+    
     % Initial matrix
     L(:, K+1) = F;
     for i = 1:K
@@ -16,11 +18,20 @@ function sol = Solve_Eq(K, N, F)
     end
     
     % Make the matrix upper triangle
-    for i = 1:K 
-        for j = i+1:K
-            while( L(j,i) >= L(i,i) )
+    for i = 1:K
+        while( sum(L(i+1:K,i)) ~= 0 )
+            for j = K:-1:i+1
+                if( L(j,i) < 0 )
+                    L(j,:) = -L(j,:);
+                end
+                if( L(i,i) > L(j,i) && L(j,i) > 0 )
+                    L([i j],:) = L([j i],:);
+                end
+            end
+            for j = i+1:K
+                tmp = floor(L(j,i) / L(i,i));
                 for m = i:K+1
-                    L(j,m) = L(j,m) - L(i,m);
+                    L(j,m) = L(j,m) - tmp * L(i,m);
                 end
             end
         end
@@ -28,17 +39,15 @@ function sol = Solve_Eq(K, N, F)
     
     % Calculate ans from bottom to top
     for i = K:-1:1
-        L(i,K+1) =  mod(L(i,K+1), 251);
+        L(i,K+1) = mod(L(i,K+1), 251);
         while mod(L(i,K+1), L(i,i)) ~= 0
             L(i,K+1) = L(i,K+1) + 251;
         end
         L(i,K+1) = L(i,K+1) / L(i,i);
         L(i,i) = 1;
         for j = 1:i-1
-            while L(j,i) > 0
-                L(j,i) = L(j,i) - L(i,i);
-                L(j,K+1) = L(j,K+1) - L(i,K+1);
-            end
+            L(j,K+1) = L(j,K+1) - L(j,i) * L(i,K+1);
+            L(j,i) = 0;
         end
     end
     
