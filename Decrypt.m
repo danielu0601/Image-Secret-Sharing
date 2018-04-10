@@ -41,7 +41,11 @@ function Decrypt(K, N, input_path, input_file, output_path, output_file, scrambl
                 if scramble == 1
                     output_img(i, j) = mod(output_img(i, j) - i - j -2, 251) +2;
                 else
-                    output_img(i, j) = mod(output_img(i, j) - round(255*rand()) -2, 251) +2;
+                    if scramble == 1
+                        input_img(i, j) = mod(input_img(i, j) - i*j - j -2, 251) +2;
+                    else
+                        output_img(i, j) = mod(output_img(i, j) - round(255*rand()) -2, 251) +2;
+                    end
                 end
             end
         end

@@ -1,5 +1,5 @@
 clear;
-scramble = 0; % Scamble before sharing, 0:no, 1:yes linear, 2+:random
+scramble = 255; % Scamble before sharing, 0:no, 1:linear, 2:oblique, 3+:random
 dsp = 0; % Display image?
 
 K = 3;

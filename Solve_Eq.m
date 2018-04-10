@@ -7,7 +7,7 @@ function sol = Solve_Eq(K, N, F)
 %   F : array of f(x)
 %   result : array of result
 
-    N = sort(N);
+    %N = sort(N);
     
     % Initial matrix
     L(:, K+1) = F;
