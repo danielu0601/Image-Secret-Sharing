@@ -1,5 +1,5 @@
 function Decrypt_Progressive(K, input_path, input_file, output_path, output_file, dsp, permutation, key)
-%DECRYPT Summary of this function goes here
+%DECRYPT Decrypt from K shares.
 %   Detailed explanation goes here
 
     N = 1:K;

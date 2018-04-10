@@ -1,5 +1,5 @@
 function Encrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp)
-%ENCRYPT Summary of this function goes here
+%ENCRYPT Encrypt the image into N shares
 %   Detailed explanation goes here
 
     % Read in files,
@@ -37,7 +37,7 @@ function Encrypt(K, N, input_path, input_file, output_path, output_file, scrambl
                 end
             end
         end
-        imwrite(uint8(input_img), 'Lenna_scrambled.bmp');
+        imwrite(uint8(input_img), [output_path 'Lenna_scrambled.bmp']);
     end
 
     % Distribute to n shares
@@ -45,11 +45,7 @@ function Encrypt(K, N, input_path, input_file, output_path, output_file, scrambl
     for i = 1:height
         for j = 1:width_n
             for x = 1:N
-                output_img(x, i, j) = 0;
-                for y = 1:K
-                    output_img(x, i, j) = output_img(x, i, j) + ( input_img(i, (j-1)*K+y)* x^(y-1) );
-                end
-                output_img(x, i, j) = mod(output_img(x, i, j), 251);
+                output_img(x, i, j) = Equation(input_img(i, (j*K-K+1):(j*K)), x);
             end
         end
     end

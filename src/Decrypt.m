@@ -1,10 +1,9 @@
 function Decrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp)
-%DECRYPT Summary of this function goes here
+%DECRYPT Decrypt from K shares.
 %   Detailed explanation goes here
 
     % Read in files,
     % Get width, height,
-    length = size(N);
     tmp = imread([input_path input_file num2str(N(1), '_%02d') '.bmp']);
     [height, width] = size(tmp);
     input_img(K, height, width) = 0;

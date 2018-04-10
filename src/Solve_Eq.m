@@ -6,21 +6,19 @@ function sol = Solve_Eq(K, N, F)
 %   N : array of x
 %   F : array of f(x)
 %   result : array of result
-
-    %N = sort(N);
     
     % Initial matrix
     L(:, K+1) = F;
-    for i = 1:K
-        for j = 1:K
-            L(i,j) = N(i)^(j-1);
-        end
+    L(:, 1) = 1;
+    L(:, 2) = N;
+    for i = 3:K
+        L(:,i) = L(:,i-1).*L(:,2);
     end
     
     % Make the matrix upper triangle
     for i = 1:K
         while( sum(L(i+1:K,i)) ~= 0 )
-            for j = K:-1:i+1
+            for j = i+1:K
                 if( L(j,i) < 0 )
                     L(j,:) = -L(j,:);
                 end
@@ -30,9 +28,7 @@ function sol = Solve_Eq(K, N, F)
             end
             for j = i+1:K
                 tmp = floor(L(j,i) / L(i,i));
-                for m = i:K+1
-                    L(j,m) = L(j,m) - tmp * L(i,m);
-                end
+                L(j,i:K+1) = L(j,i:K+1) - tmp * L(i,i:K+1);
             end
         end
     end
@@ -45,10 +41,8 @@ function sol = Solve_Eq(K, N, F)
         end
         L(i,K+1) = L(i,K+1) / L(i,i);
         L(i,i) = 1;
-        for j = 1:i-1
-            L(j,K+1) = L(j,K+1) - L(j,i) * L(i,K+1);
-            L(j,i) = 0;
-        end
+        L(1:i-1,K+1) = L(1:i-1,K+1) - L(1:i-1,i) * L(i,K+1);
+        L(1:i-1,i) = 0;
     end
     
     % Assign result to output

@@ -1,5 +1,5 @@
 function Encrypt_Progressive(input_path, input_file, output_path, output_file, dsp, permutation, key)
-%Encrypt_Progressive Summary of this function goes here
+%Encrypt_Progressive Encrypt the image into N shares
 %   Expect 8*8's multiple of image size
 
     N = 8;
@@ -41,7 +41,7 @@ function Encrypt_Progressive(input_path, input_file, output_path, output_file, d
             tmp = randperm(height);
             input_img(:,i) = input_img(tmp,i);
         end
-        imwrite(uint8(input_img), 'Lenna_permuted.bmp');
+        imwrite(uint8(input_img), [output_path 'Lenna_permuted.bmp']);
     end
     
 
@@ -68,7 +68,6 @@ function Encrypt_Progressive(input_path, input_file, output_path, output_file, d
             end
         end
     end
-    output_img = mod(output_img, 251);
 %% Define zigzag order          %% Define dct's k       %% Define idct's k
 %  1  2  6  7 15 16 28 29       % 2 2 4 4 5 5 6 6       % 2 3 4 4
 %  3  5  8 14 17 27 30 43       % 3 3 4 5 5 6 6 7       % 5 5 6 6
