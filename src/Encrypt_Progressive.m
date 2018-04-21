@@ -1,4 +1,4 @@
-function Encrypt_Progressive(input_path, input_file, output_path, output_file, dsp, permutation, key)
+function Encrypt_Progressive(input_path, input_file, output_path, output_file, dsp, permutation, key, QT)
 %Encrypt_Progressive Encrypt the image into N shares
 %   Expect 8*8's multiple of image size
 
@@ -18,7 +18,6 @@ function Encrypt_Progressive(input_path, input_file, output_path, output_file, d
     
     height_o = height*3/8;
     width_o = width*4/8;
-    
 
     % Narrow the pixel value area
     for i = 1:height
@@ -51,7 +50,7 @@ function Encrypt_Progressive(input_path, input_file, output_path, output_file, d
         for j = 1:8:width
             off_i = (i-1)*3/8+1;
             off_j = (j-1)*4/8+1;
-            tmp = round(dct2(input_img(i:i+7,j:j+7))/8);
+            tmp = round(dct2(input_img(i:i+7,j:j+7))./QT);
             for x = 1:N
                 output_img(x, off_i  , off_j  ) = Equation([tmp(1,1) tmp(1,2)], x);
                 output_img(x, off_i  , off_j+1) = Equation([tmp(2,1) tmp(3,1) tmp(2,2)], x);

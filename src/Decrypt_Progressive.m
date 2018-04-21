@@ -1,4 +1,4 @@
-function Decrypt_Progressive(K, input_path, input_file, output_path, output_file, dsp, permutation, key)
+function Decrypt_Progressive(K, input_path, input_file, output_path, output_file, dsp, permutation, key, QT)
 %DECRYPT Decrypt from K shares.
 %   Detailed explanation goes here
 
@@ -120,7 +120,7 @@ function Decrypt_Progressive(K, input_path, input_file, output_path, output_file
             end
             off_i = (i-1)*8/3 +1; 
             off_j = (j-1)*8/4 +1;
-            output_img(off_i:off_i+7, off_j:off_j+7) = round(idct2(tmp*8));
+            output_img(off_i:off_i+7, off_j:off_j+7) = round(idct2(tmp.*QT));
         end
     end
 %% Define zigzag order          %% Define dct's k       %% Define idct's k
@@ -140,7 +140,7 @@ function Decrypt_Progressive(K, input_path, input_file, output_path, output_file
             for j=1:height_o
                 tmp2(tmp(j)) = j;
             end
-            output_img(:,i) = output_img(tmp2,i);
+            output_img(tmp,i) = output_img(:,i);
         end
         rng(key);
         for i = 1:height_o
@@ -148,7 +148,7 @@ function Decrypt_Progressive(K, input_path, input_file, output_path, output_file
             for j=1:width_o
                 tmp2(tmp(j)) = j;
             end
-            output_img(i,:) = output_img(i,tmp2);
+            output_img(i,tmp) = output_img(i,:);
         end
     end
     
@@ -166,10 +166,11 @@ function Decrypt_Progressive(K, input_path, input_file, output_path, output_file
     % Output
     output_img = uint8(output_img);
     
-    org = imread('Lenna.bmp');
+    org = imread(['../' 'Lenna.bmp']);
     PSNR = psnr(output_img, org);
+    [ssimval, ssimmap] = ssim(output_img, org);
     
-    output_name = [output_path output_file num2str(K, '_%02d') num2str(PSNR, '_%f') '.bmp'];
+    output_name = [output_path output_file num2str(K, '_%02d') num2str(ssimval, '_%f') num2str(PSNR, '_%f') '.bmp'];
     imwrite(output_img, output_name);
     if dsp
         imshow(output_img);

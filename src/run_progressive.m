@@ -3,22 +3,31 @@ dsp = 0; % Display if 1
 permutation = 0; % permute if 1
 key = 999;
 
+QT = [8 5 3 3 2 1 1 1;
+      5 3 3 2 1 1 1 1;
+      3 3 2 1 1 1 1 1;
+      3 2 1 1 1 1 1 1;
+      2 1 1 1 1 1 1 1;
+      1 1 1 1 1 1 1 1;
+      1 1 1 1 1 1 1 1;
+      1 1 1 1 1 1 1 1];
+
 input_path  = '../';
 input_file  = 'Lenna.bmp';
-output_path = '../result_p_04/';
+output_path = '../result_p_06/';
 output_file = 'result';
 
-Encrypt_Progressive(input_path, input_file, output_path, output_file, dsp, permutation, key);
+Encrypt_Progressive(input_path, input_file, output_path, output_file, dsp, permutation, key, QT);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 input_path = output_path;
 input_file  = output_file;
-output_path = input_path;
+%output_path = input_path;
 output_file = 'dec';
 
 for K = 1:8
-    Decrypt_Progressive(K, input_path, input_file, output_path, output_file, dsp, permutation, key);
+    Decrypt_Progressive(K, input_path, input_file, output_path, output_file, dsp, permutation, key, QT);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

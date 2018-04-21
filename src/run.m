@@ -24,7 +24,7 @@ Decrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-org = imread('Lenna.bmp');
+org = imread(['../' 'Lenna.bmp']);
 [height width] = size(org);
 dec = imread([output_path output_file]);
 PSNR = psnr(dec(1:height, 1:width), org)
