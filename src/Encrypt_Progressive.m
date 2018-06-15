@@ -1,4 +1,5 @@
-function Encrypt_Progressive(input_path, input_file, output_path, output_file, dsp, permutation, key, QT)
+function Encrypt_Progressive(input_path, input_file, output_path, output_file,...
+    dsp, permutation, key, QT)
 %Encrypt_Progressive Encrypt the image into N shares
 %   Expect 8*8's multiple of image size
 
@@ -7,7 +8,7 @@ function Encrypt_Progressive(input_path, input_file, output_path, output_file, d
     % Read in files,
     % Get width, height,
     % Padding
-    [SUCCESS,MESSAGE,MESSAGEID] = mkdir(output_path);
+    [~,~,~] = mkdir(output_path);
     input_img = imread([input_path input_file]);
     input_img = double(input_img);
     [height, width] = size(input_img);
@@ -67,7 +68,7 @@ function Encrypt_Progressive(input_path, input_file, output_path, output_file, d
             end
         end
     end
-%% Define zigzag order          %% Define dct's k       %% Define idct's k
+% Define zigzag order           % Define dct's k        % Define idct's k
 %  1  2  6  7 15 16 28 29       % 2 2 4 4 5 5 6 6       % 2 3 4 4
 %  3  5  8 14 17 27 30 43       % 3 3 4 5 5 6 6 7       % 5 5 6 6
 %  4  9 13 18 26 31 42 44       % 3 4 4 5 6 6 7 7       % 7 7 7 8

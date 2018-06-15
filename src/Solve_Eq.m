@@ -9,26 +9,32 @@ function sol = Solve_Eq(K, N, F)
     
     % Initial matrix
     L(:, K+1) = F;
-    L(:, 1) = 1;
     L(:, 2) = N;
+    L(:, 1) = 1;
+    
     for i = 3:K
         L(:,i) = L(:,i-1).*L(:,2);
     end
     
     % Make the matrix upper triangle
-    for i = 1:K
+    for i = 1:K-1
         while( sum(L(i+1:K,i)) ~= 0 )
+            tmp = i;
             for j = i+1:K
                 if( L(j,i) < 0 )
                     L(j,:) = -L(j,:);
                 end
-                if( L(i,i) > L(j,i) && L(j,i) > 0 )
-                    L([i j],:) = L([j i],:);
+                if( L(tmp,i) > L(j,i) && L(j,i) > 0 )
+                    tmp = j;
                 end
             end
+            if tmp ~= i
+                L([i tmp],:) = L([tmp i],:);
+            end
             for j = i+1:K
-                tmp = floor(L(j,i) / L(i,i));
-                L(j,i:K+1) = L(j,i:K+1) - tmp * L(i,i:K+1);
+                %tmp = floor(L(j,i) / L(i,i));
+                %L(j,:) = L(j,:) - tmp * L(i,:);
+                L(j,:) = L(j,:) - L(i,:) * floor(L(j,i) / L(i,i));
             end
         end
     end
@@ -40,9 +46,9 @@ function sol = Solve_Eq(K, N, F)
             L(i,K+1) = L(i,K+1) + 251;
         end
         L(i,K+1) = L(i,K+1) / L(i,i);
-        L(i,i) = 1;
+        %L(i,i) = 1;
         L(1:i-1,K+1) = L(1:i-1,K+1) - L(1:i-1,i) * L(i,K+1);
-        L(1:i-1,i) = 0;
+        %L(1:i-1,i) = 0;
     end
     
     % Assign result to output
