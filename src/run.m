@@ -1,30 +1,30 @@
 clear;
-scramble = 255; % Scamble before sharing, 0:no, 1:linear, 2:oblique, 3+:random
-dsp = 0; % Display image?
 
-K = 3;
-N = 4;
-input_path  = '../';
-input_file  = 'Lenna.bmp';
-output_path = '../result_01/';
-output_file = 'result';
+input.dsp         = 0; % Display image?
+input.scramble    = 255; % Scamble before sharing, 0:no, 1:linear, 2:oblique, 3+:random
 
-Encrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp);
+input.K           = 3;
+input.N           = 4;
+input.input_path  = '../';
+input.input_file  = 'Lenna.bmp';
+input.output_path = '../result_01/';
+input.output_file = 'result';
+
+Encrypt(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-K = 3;
-N = [2 3 4];
-input_path  = output_path;
-input_file  = output_file;
-output_path = input_path;
-output_file = 'dec.bmp';
+input.K           = 3;
+input.N           = [2 3 4];
+input.input_path  = input.output_path;
+input.input_file  = input.output_file;
+input.output_file = 'dec.bmp';
 
-Decrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp);
+Decrypt(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 org = imread(['../' 'Lenna.bmp']);
 [height width] = size(org);
-dec = imread([output_path output_file]);
+dec = imread([input.output_path input.output_file]);
 PSNR = psnr(dec(1:height, 1:width), org)

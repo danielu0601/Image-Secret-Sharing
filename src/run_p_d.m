@@ -46,9 +46,8 @@ Encrypt_P_D(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-input.input_path = input.output_path;
+input.input_path  = input.output_path;
 input.input_file  = input.output_file;
-% output_path = input_path;
 input.output_file = 'dec';
 
 for K = 1:9

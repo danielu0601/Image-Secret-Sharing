@@ -1,41 +1,42 @@
 clear;
-dsp = 0; % Display if 1
-permutation = 0; % permute if 1
-key = 999;
 
-QT = [8 5 3 3 2 1 1 1;
-      5 3 3 2 1 1 1 1;
-      3 3 2 1 1 1 1 1;
-      3 2 1 1 1 1 1 1;
-      2 1 1 1 1 1 1 1;
-      1 1 1 1 1 1 1 1;
-      1 1 1 1 1 1 1 1;
-      1 1 1 1 1 1 1 1];
+input.dsp         = 0; % Display if 1
+input.permutation = 0; % permute if 1
+input.key         = 999;
+input.QT = [8 5 3 3 2 1 1 1;
+            5 3 3 2 1 1 1 1;
+            3 3 2 1 1 1 1 1;
+            3 2 1 1 1 1 1 1;
+            2 1 1 1 1 1 1 1;
+            1 1 1 1 1 1 1 1;
+            1 1 1 1 1 1 1 1;
+            1 1 1 1 1 1 1 1];
 
-input_path  = '../';
-input_file  = 'Lenna.bmp';
-output_path = '../result_p_07/';
-output_file = 'result';
+input.N = 9;
 
-Encrypt_Progressive_2(input_path, input_file, output_path, output_file, dsp, permutation, key, QT);
+input.input_path  = '../';
+input.input_file  = 'Lenna.bmp';
+input.output_path = '../result_p_07/';
+input.output_file = 'result';
+
+Encrypt_Progressive_2(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-input_path = output_path;
-input_file  = output_file;
-%output_path = input_path;
-output_file = 'dec';
+input.input_path  = input.output_path;
+input.input_file  = input.output_file;
+input.output_file = 'dec';
 
 for K = 1:9
-    Decrypt_Progressive_2(K, input_path, input_file, output_path, output_file, dsp, permutation, key, QT);
+    Decrypt_Progressive_2(input, K);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 4096 / k
+%  4096 / k
 %    2    3    4    5    6    7    8    9
 % 4096 4098 4096 4100 4098 4102 4096 4104
 % 2048 1366 1024  820  683  586  512  456
-%% Define zigzag order          %% Define dct's k
+%  Define zigzag order          %% Define dct's k
 %  1  2  6  7 15 16 28 29       % 2 3 6 6 7 7 8 8
 %  3  5  8 14 17 27 30 43       % 4 5 6 7 7 8 8 8
 %  4  9 13 18 26 31 42 44       % 5 6 7 7 8 8 8 8

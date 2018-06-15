@@ -1,6 +1,15 @@
-function Decrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp)
+function Decrypt(input)
 %DECRYPT Decrypt from K shares.
 %   Detailed explanation goes here
+
+    dsp         = input.dsp;
+    scramble   = input.scramble;
+    K           = input.K;
+    N           = input.N;
+    input_path  = input.input_path;
+    input_file  = input.input_file;
+    output_path = input.output_path;
+    output_file = input.output_file;
 
     % Read in files,
     % Get width, height,

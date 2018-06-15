@@ -1,9 +1,17 @@
-function Encrypt_Progressive_2(input_path, input_file, output_path, output_file,...
-    dsp, permutation, key, QT)
+function Encrypt_Progressive_2(input)
 %Encrypt_Progressive Encrypt the image into N shares
 %   Expect 8*8's multiple of image size
 
-    N = 9;
+    dsp         = input.dsp;
+    permutation = input.permutation;
+    key         = input.key;
+    QT          = input.QT;
+    N           = input.N;
+    input_path  = input.input_path;
+    input_file  = input.input_file;
+    output_path = input.output_path;
+    output_file = input.output_file;
+    
     % Read in files,
     % Get width, height,
     % Padding
@@ -15,7 +23,6 @@ function Encrypt_Progressive_2(input_path, input_file, output_path, output_file,
     input_img(height, width_n*8) = input_img(height, width);
     input_img(:, (width+1):(width_n*8)) = round(255*rand(height, (width_n*8) - width));
     width = width_n*8;
-    
     height_o = height/8;
     width_o = width/8;
 

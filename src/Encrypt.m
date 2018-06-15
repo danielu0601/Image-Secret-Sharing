@@ -1,11 +1,20 @@
-function Encrypt(K, N, input_path, input_file, output_path, output_file, scramble, dsp)
+function Encrypt(input)
 %ENCRYPT Encrypt the image into N shares
 %   Detailed explanation goes here
+
+    dsp         = input.dsp;
+    scramble    = input.scramble;
+    K           = input.K;
+    N           = input.N;
+    input_path  = input.input_path;
+    input_file  = input.input_file;
+    output_path = input.output_path;
+    output_file = input.output_file;
 
     % Read in files,
     % Get width, height,
     % Padding
-    [SUCCESS,MESSAGE,MESSAGEID] = mkdir(output_path);
+    [~,~,~] = mkdir(output_path);
     input_img = imread([input_path input_file]);
     input_img = double(input_img);
     [height, width] = size(input_img);

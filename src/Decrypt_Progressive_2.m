@@ -1,7 +1,15 @@
-function Decrypt_Progressive_2(K, input_path, input_file, output_path,...
-                                    output_file, dsp, permutation, key, QT)
+function Decrypt_Progressive_2(input, K)
 %DECRYPT Decrypt from K shares.
 %   Detailed explanation goes here
+    
+    dsp         = input.dsp;
+    permutation = input.permutation;
+    key         = input.key;
+    QT          = input.QT;
+    input_path  = input.input_path;
+    input_file  = input.input_file;
+    output_path = input.output_path;
+    output_file = input.output_file;
 
     N = 1:K;
     % Read in files,
