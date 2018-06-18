@@ -1,159 +1,176 @@
-function Decrypt_P_D(K, input_path, input_file, output_path,...
-                                    output_file, dsp, permutation, key, QT)
+function Decrypt_P_D(input, K)
 %DECRYPT Decrypt from K shares.
-%   Detailed explanation goes here
-
+% Get parameter
+%     dsp         = input.dsp;
+    QT          = input.QT;
+    Z           = input.Z;
+    width       = input.width;
+    height      = input.height;
+    input_path  = input.input_path;
+    input_file  = input.input_file;
+    output_path = input.output_path;
+    output_file = input.output_file;
+    
+    height_s = height/8;
+    width_s = width/8;
+    
     N = 1:K;
-    % Read in files,
-    % Get width, height,
-    %tmp = imread([input_path input_file num2str(N(1), '_%02d') '.bmp']);
-    %[height, width] = size(tmp);
-    input_img(K, 37888) = 0;
+    % Read in files, turns back into 1D array
+%     input_img(K, width) = 0;
     for i = 1:K
-        input_img(i,:) = reshape(imread([input_path input_file num2str(N(i),...
-                                            '_%02d') '.bmp']), 1, []);
+        tmp = reshape(imread([input_path input_file num2str(N(i),'_%02d') '.bmp']), 1, []);
+        input_img(i, :) = reshape(tmp, 1, []);
     end
     input_img = double(input_img);
-    %height_o = height*8/3;
-    %width_o = width*8/4;
-    output_img( 512, 512 ) = 0;
-
-    % Solve the original secret from n shares
-    C(64,4104) = 0;
-    offset = 0;
-    if K > 1
-        for i = 1:2:4096
-            zz = Solve_Eq(2, 1:2, input_img(1:2, offset+((i+1)/2)));
-            C(1,i:i+1) = zz;
+    output_img = zeros( height, width );
+    
+    %%%
+    % NOT DONE
+    % Solve the Equations
+    K_a = [ 0 1 2 3 5 10 21 62 64];
+    C(1:height*width) = 125;
+    offset_i = 1;
+    offset_C = 1;
+    % 2 or more Shares
+    if K >= 2
+%         while( offset_C < length(input_img) )
+        while( offset_C < height_s*width_s )
+            zz = Solve_Eq(2, 1:2, input_img(1:2, offset_i));
+            C(offset_C:offset_C+1) = zz;
+            offset_i = offset_i + 1;
+            offset_C = offset_C + 2;
         end
-        offset = offset + 2048;
-    end
-    if K > 2
-        for i = 1:3:4096
-            zz = Solve_Eq(3, 1:3, input_img(1:3, offset+((i+2)/3)));
-            C(2,i:i+2) = zz;
-        end
-        offset = offset + 1366;
-    end
-    if K > 3
-        for i = 1:4:4096
-            zz = Solve_Eq(4, 1:4, input_img(1:4, offset+((i+3)/4)));
-            C(9,i:i+3) = zz;
-        end
-        offset = offset + 1024;
-    end
-    if K > 4
-        for j = [10 17]
-            for i = 1:5:4096
-                zz = Solve_Eq(5, 1:5, input_img(1:5, offset+((i+4)/5)));
-                C(j,i:i+4) = zz;
+         % 3 or more Shares
+        if K >= 3
+            % Find out the sensitive area first
+            S = [];
+            offset_i = 1; % i for input_img ptr
+            offset_C = 1; % C for output_img ptr
+            while( offset_C < height_s*width_s )
+                zz = Solve_Eq(2, [1, 3], input_img([1, 3], offset_i));
+                if( C(offset_C:offset_C+1) ~= zz)
+                    S = [S offset_C offset_C+1];
+                    zz = Solve_Eq(K, 1:K, input_img(1:K, offset_i));
+                    C(offset_C:offset_C+1) = zz(1:2);
+                end
+                offset_i = offset_i + 1;
+                offset_C = offset_C + 2;
             end
-            offset = offset + 820;
+            % Solve the remaining with known S.
+            for R = 3:K
+                while offset_C < height_s*width_s*K_a(R)
+                    % Find if overlap with sensitive area
+                    flag = 0;
+                    for new_i = offset_C:offset_C+R-1
+                        if( Check_S( S, new_i ) )
+                            flag = 1;
+                            break;
+                        end
+                    end
+                    % Overlapped
+                    if( flag == 1 )
+                        % Solve share for not Overlapped part
+                        if( new_i ~= offset_C )
+                            zz = Solve_Eq(R, 1:R, input_img(1:R, offset_i));
+                            C(offset_C:new_i-1) = zz(1:new_i-offset_C);
+                            offset_i = offset_i + 1;
+                            offset_C = new_i;
+                        end
+                        % Solve share for sensitive part
+                        while( Check_S( S, offset_C ) )
+                            % Sensitive area
+                            zz = Solve_Eq(K, 1:K, input_img(1:K, offset_i));
+                            C(offset_C) = zz(1);
+                            offset_C = offset_C+1;
+                            offset_i = offset_i+1;
+                            % If reach EOF
+                            if offset_C == length(C)
+                                break;
+                            end
+                        end
+                    % Not sensitive part
+                    else
+%                         % If remain length < R
+%                         if( offset_C+R-1 > length(C) )
+%                             tmp = randi(255, 1, R);
+%                             tmp(1:(length(C)-offset_C+1)) = C(offset_C:end);
+%                             for x = 1:N
+%                                 output_img(x, offset_i) = Equation(tmp, x);
+%                             end
+                        % Normal condition
+%                         else
+%                             for x = 1:N
+%                                 output_img(x, offset_i) = Equation(C(offset_C:offset_C+R-1), x);
+%                             end
+%                         end
+                        zz = Solve_Eq(R, 1:R, input_img(1:R, offset_i));
+                        C(offset_C:offset_C+R-1) = zz;
+                        offset_i = offset_i+1;
+                        offset_C = offset_C+R;
+                    end
+                end
+            end
         end
     end
-    if K > 5
-        for j = [3 4 11 18 25]
-            for i = 1:6:4096
-                zz = Solve_Eq(6, 1:6, input_img(1:6, offset+((i+5)/6)));
-                C(j,i:i+5) = zz;
-            end
-            offset = offset + 683;
+%     C = randi( 250, 1, height*width );
+%     subplot(2, 1, 2);plot(C(1:2048));axis([-inf, inf, 0, 255]);
+    %%%
+    
+    % Rearrange back to original shape
+    offset = 1;
+    for i = Z
+        tmp = reshape( C(offset:(offset+height_s*width_s-1)), height_s, width_s );
+%         i = ii*8 + (jj-8);
+        ii = ceil(i / 8);
+        jj = mod( i, 8 );
+        if jj == 0
+            jj = 8;
         end
+        output_img(ii:8:height, jj:8:width) = tmp;
+        offset = offset + height_s*width_s;
     end
-    if K > 6
-        for j = [5:6 12:13 19:20 26:27 33:34 41]
-            for i = 1:7:4096
-                zz = Solve_Eq(7, 1:7, input_img(1:7, offset+((i+6)/7)));
-                C(j,i:i+6) = zz;
-            end
-            offset = offset + 586;
-        end
-    end
-    if K > 7
-        for j = [7:8 14:16 21:24 28:32 35:40 42:62]
-            for i = 1:8:4096
-                zz = Solve_Eq(8, 1:8, input_img(1:8, offset+((i+7)/8)));
-                C(j,i:i+7) = zz;
-            end
-            offset = offset + 512;
-        end
-    end
-    if K > 8
-        for j = [63:64]
-            for i = 1:9:4096
-                zz = Solve_Eq(9, 1:9, input_img(1:9, offset+((i+8)/9)));
-                C(j,i:i+8) = zz;
-            end
-            offset = offset + 456;
+    
+    % Do IDCT
+    output_img = output_img - 125;
+    for i = 1:8:height
+        for j = 1:8:width
+            output_img(i,j) = output_img(i,j) + 128;
+            output_img(i:i+7,j:j+7) = round(idct2(output_img(i:i+7,j:j+7).*QT));
         end
     end
     
-    
-    for x = 2:64
-        for y = 1:4096
-            if C(x,y) > 127
-                C(x,y) = C(x,y) - 251;
+    % Do truncate
+    for i = 1:512
+        for j = 1:512
+            if output_img(i,j) > 255
+                output_img(i,j) = 255;
+            end
+            if output_img(i,j) < 0
+                output_img(i,j) = 0;
             end
         end
     end
-    
-    C(:,4097:4104) = [];
-    for i = 1:64
-        D(i,:,:) = reshape(C(i,:), 64, []);
-    end    
-    for i = 1:8
-        for j = 1:8
-            E(i:8:512, j:8:512) = D((i-1)*8+j,:,:);
-        end
-    end
-    for i = 1:8:512
-        for j = 1:8:512
-            output_img(i:i+7,j:j+7) = round(idct2(E(i:i+7,j:j+7).*QT));
-        end
-    end
-    
-    % Scramble back the output image
-    if permutation == 1
-        rng(key);
-        for i = 1:width_o
-            tmp = randperm(height_o);
-            for j=1:height_o
-                tmp2(tmp(j)) = j;
-            end
-            output_img(tmp,i) = output_img(:,i);
-        end
-        rng(key);
-        for i = 1:height_o
-            tmp = randperm(width_o);
-            for j=1:width_o
-                tmp2(tmp(j)) = j;
-            end
-            output_img(i,tmp) = output_img(i,:);
-        end
-    end
-    
-    % Calculate if there is 0~4 <=> 251~255
-%     avg = mean(mean(output_img)) - 127;
-%     avg = avg / abs(avg);
-%     for i = 1:512
-%         for j = 1:512
-%             if output_img(i, j) < 5 || output_img(i, j) > 250
-%                 output_img(i, j) = Check_neighbor(output_img, i, j, avg);
-%             end
-%         end
-%     end
     
     % Output
     output_img = uint8(output_img);
     
-    org = imread(['../' 'Lenna.bmp']);
+    org = imread('../Lenna.bmp');
     PSNR = psnr(output_img, org);
     [ssimval, ~] = ssim(output_img, org);
     
     output_name = [output_path output_file num2str(K, '_%02d')...
                     num2str(ssimval, '_%f') num2str(PSNR, '_%f') '.bmp'];
     imwrite(output_img, output_name);
-    if dsp
-        imshow(output_img);
+%     if dsp
+%         imshow(output_img);
+%     end
+end
+
+function out = Check_S( S, i )
+% Return true if 'i' is in sensitive area
+    i = mod(i, 64*64);
+    if( i == 0 )
+        i = 64*64;
     end
+    out = sum( find( S == i ) );
 end

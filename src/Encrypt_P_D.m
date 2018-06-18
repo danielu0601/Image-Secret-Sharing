@@ -11,10 +11,8 @@ function Encrypt_P_D( input )
     output_path = input.output_path;
     output_file = input.output_file;
     
+    N = input.N;
     S = input.S;
-
-    % Set share numbers
-    N = 9;
     
     % Read in files,
     [~,~,~] = mkdir(output_path);
@@ -31,7 +29,7 @@ function Encrypt_P_D( input )
     height_s = height/8;
     width_s = width/8;
     
-    % Do DCT and rearrange
+    % Do DCT
     img = zeros(height, width);
     for i = 1:8:height
         for j = 1:8:width
@@ -41,7 +39,7 @@ function Encrypt_P_D( input )
     end
     img = img + 125;
     
-    % do truncate
+    % Do truncate
     for i = 1:512
         for j = 1:512
             if img(i,j) > 250
@@ -113,15 +111,15 @@ function Encrypt_P_D( input )
             if( flag == 1 )
                 % Do share for not Overlapped part
                 if( new_i ~= i )
-                    tmp = [C(i:new_i) randi(250,1,R-new_i+i-1)];
-%                     tmp = [C(i:new_i) randi(250,1,3-new_i+i-1)];
+                    tmp = [C(i:new_i-1) randi(250,1,R-new_i+i)];
+%                     tmp = [C(i:new_i-1) randi(250,1,3-new_i+i)];
                     for x = 1:N
                         output_img(x, offset) = Equation(tmp, x);
                     end
                     offset = offset+1;
+                    i = new_i;
                 end
                 % Do share for sensitive part
-                i = new_i;
                 while( Check_S( S, i ) )
                     % Sensitive area
                     tmp = [C(i) randi(250,1,N-1)];
@@ -164,18 +162,20 @@ function Encrypt_P_D( input )
     offset_s = ceil( offset / 256 );
     output_img(:,(offset_s*256+1):end) = [];
     % Give Random value to padding (to show the padding, comment out)
-    % output_img(:,(offset+1):(offset_s*256)) = randi(250,N,(offset_s*256)-offset);
+    output_img(:,(offset+1):(offset_s*256)) = randi(250,N,(offset_s*256)-offset);
     
     % Output
     output_img = uint8(output_img);
     for i = 1:N
         output_name = [output_path output_file num2str(i, '_%02d') '.bmp'];
-        tmp = reshape(output_img(i,:,:), [], 256);
+%         tmp = reshape(output_img(i,:,:), [], 256);
+        tmp = reshape(output_img(i,:,:), 256, []);
         imwrite(tmp, output_name);
 %         if dsp
 %             subplot(N,1,i);imshow(tmp);
 %         end
     end
+%     subplot(2, 1, 1);plot(C(1:2048));axis([-inf, inf, 0, 255]);
 end
 
 function out = Check_S( S, i )

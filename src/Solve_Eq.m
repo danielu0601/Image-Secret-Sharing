@@ -6,51 +6,75 @@ function sol = Solve_Eq(K, N, F)
 %   N : array of x
 %   F : array of f(x)
 %   result : array of result
-    
-    % Initial matrix
-    L(:, K+1) = F;
-    L(:, 2) = N;
-    L(:, 1) = 1;
-    
-    for i = 3:K
-        L(:,i) = L(:,i-1).*L(:,2);
-    end
-    
-    % Make the matrix upper triangle
-    for i = 1:K-1
-        while( sum(L(i+1:K,i)) ~= 0 )
-            tmp = i;
-            for j = i+1:K
-                if( L(j,i) < 0 )
-                    L(j,:) = -L(j,:);
+
+    % Special Cases
+    if( K == 2 )
+        sol(2) = divide( F(2)-F(1), N(2)-N(1));
+        sol(1) = mod( F(1)-sol(2)*N(1) , 251);
+    elseif( K == 3 )
+%         sol(2) N(2)-N(1) + sol(3) N(2)^2-N(1)^2 = F(2)-F(1);
+%         sol(2) N(3)-N(1) + sol(3) N(3)^2-N(1)^2 = F(3)-F(1);
+        T1 = divide(F(2)-F(1),N(2)-N(1));
+        T2 = divide(F(3)-F(1),N(3)-N(1));
+%         sol(2) + sol(3) N(2)+N(1) = T1;
+%         sol(2) + sol(3) N(3)+N(1) = T2;
+%                  sol(3) N(3)-N(2) = T2-T1;
+        sol(3) = divide(T2-T1,N(3)-N(2));
+        sol(2) = mod( T1-sol(3)*(N(1)+N(2)), 251);
+        sol(1) = mod( F(1)-sol(3)*N(1)^2-sol(2)*N(1), 251);
+    else
+        % Initial matrix
+        L(:, K+1) = F;
+        L(:, 2) = N;
+        L(:, 1) = 1;
+
+        for i = 3:K
+            L(:,i) = L(:,i-1).*L(:,2);
+        end
+
+        % Make the matrix upper triangle
+        for i = 1:K-1
+            while( sum(L(i+1:K,i)) ~= 0 )
+                tmp = i;
+                for j = i+1:K
+                    if( L(j,i) < 0 )
+                        L(j,:) = -L(j,:);
+                    end
+                    if( L(tmp,i) > L(j,i) && L(j,i) > 0 )
+                        tmp = j;
+                    end
                 end
-                if( L(tmp,i) > L(j,i) && L(j,i) > 0 )
-                    tmp = j;
+                if tmp ~= i
+                    L([i tmp],:) = L([tmp i],:);
                 end
-            end
-            if tmp ~= i
-                L([i tmp],:) = L([tmp i],:);
-            end
-            for j = i+1:K
-                %tmp = floor(L(j,i) / L(i,i));
-                %L(j,:) = L(j,:) - tmp * L(i,:);
-                L(j,:) = L(j,:) - L(i,:) * floor(L(j,i) / L(i,i));
+                for j = i+1:K
+                    %tmp = floor(L(j,i) / L(i,i));
+                    %L(j,:) = L(j,:) - tmp * L(i,:);
+                    L(j,:) = L(j,:) - L(i,:) * floor(L(j,i) / L(i,i));
+                end
             end
         end
-    end
-    
-    % Calculate ans from bottom to top
-    for i = K:-1:1
-        L(i,K+1) = mod(L(i,K+1), 251);
-        while mod(L(i,K+1), L(i,i)) ~= 0
-            L(i,K+1) = L(i,K+1) + 251;
+
+        % Calculate ans from bottom to top
+        for i = K:-1:1
+            L(i,K+1) = mod(L(i,K+1), 251);
+            while mod(L(i,K+1), L(i,i)) ~= 0
+                L(i,K+1) = L(i,K+1) + 251;
+            end
+            L(i,K+1) = L(i,K+1) / L(i,i);
+            %L(i,i) = 1;
+            L(1:i-1,K+1) = L(1:i-1,K+1) - L(1:i-1,i) * L(i,K+1);
+            %L(1:i-1,i) = 0;
         end
-        L(i,K+1) = L(i,K+1) / L(i,i);
-        %L(i,i) = 1;
-        L(1:i-1,K+1) = L(1:i-1,K+1) - L(1:i-1,i) * L(i,K+1);
-        %L(1:i-1,i) = 0;
+
+        % Assign result to output
+        sol = reshape( L(:,K+1), 1, K );
     end
-    
-    % Assign result to output
-    sol = reshape( L(:,K+1), 1, K );
+end
+
+function out = divide( A, B )
+    while mod(A, B) ~= 0
+        A = A + 251;
+    end
+    out = mod(A/B,251);
 end
