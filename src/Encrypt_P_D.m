@@ -40,21 +40,21 @@ function Encrypt_P_D( input )
     img = img + 125;
     
     % Do truncate
-    for i = 1:512
-        for j = 1:512
+    for j = 1:width
+        for i = 1:height
             if img(i,j) > 250
                 img(i,j) = 250;
-            end
-            if img(i,j) < 0
+            elseif img(i,j) < 0
                 img(i,j) = 0;
             end
         end
     end
     
+    A = zeros(64, height_s, width_s );
     % Do Rearrange
-    for i = 1:8
-        for j = 1:8
-            A((i-1)*8+j,:,:) = img(i:8:512, j:8:512);
+    for j = 1:8
+        for i = 1:8
+            A((i-1)*8+j,:,:) = img(i:8:height, j:8:width);
         end
     end
     C = [];
@@ -159,17 +159,17 @@ function Encrypt_P_D( input )
     
     offset = offset - 1;
     % Delete rest part and remain padding to fit output image size
-    offset_s = ceil( offset / 256 );
-    output_img(:,(offset_s*256+1):end) = [];
+    offset_s = ceil( offset * 2 / height );
+    output_img(:,(offset_s*height/2+1):end) = [];
     % Give Random value to padding (to show the padding, comment out)
-    output_img(:,(offset+1):(offset_s*256)) = randi(250,N,(offset_s*256)-offset);
+    output_img(:,(offset+1):(offset_s*height/2)) = randi(250,N,(offset_s*height/2)-offset);
     
     % Output
     output_img = uint8(output_img);
     for i = 1:N
         output_name = [output_path output_file num2str(i, '_%02d') '.bmp'];
-%         tmp = reshape(output_img(i,:,:), [], 256);
-        tmp = reshape(output_img(i,:,:), 256, []);
+%         tmp = reshape(output_img(i,:,:), [], width/2);
+        tmp = reshape(output_img(i,:,:), height/2, []);
         imwrite(tmp, output_name);
 %         if dsp
 %             subplot(N,1,i);imshow(tmp);

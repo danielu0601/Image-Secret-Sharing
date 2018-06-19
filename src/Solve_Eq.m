@@ -9,19 +9,19 @@ function sol = Solve_Eq(K, N, F)
 
     % Special Cases
     if( K == 2 )
-        sol(2) = divide( F(2)-F(1), N(2)-N(1));
-        sol(1) = mod( F(1)-sol(2)*N(1) , 251);
+        sol(2) = divide( F(2)-F(1), N(2)-N(1) );
+        sol(1) = mod( F(1)-sol(2)*N(1), 251 );
     elseif( K == 3 )
-%         sol(2) N(2)-N(1) + sol(3) N(2)^2-N(1)^2 = F(2)-F(1);
-%         sol(2) N(3)-N(1) + sol(3) N(3)^2-N(1)^2 = F(3)-F(1);
-        T1 = divide(F(2)-F(1),N(2)-N(1));
-        T2 = divide(F(3)-F(1),N(3)-N(1));
-%         sol(2) + sol(3) N(2)+N(1) = T1;
-%         sol(2) + sol(3) N(3)+N(1) = T2;
-%                  sol(3) N(3)-N(2) = T2-T1;
-        sol(3) = divide(T2-T1,N(3)-N(2));
-        sol(2) = mod( T1-sol(3)*(N(1)+N(2)), 251);
-        sol(1) = mod( F(1)-sol(3)*N(1)^2-sol(2)*N(1), 251);
+        % sol(2) N(2)-N(1) + sol(3) N(2)^2-N(1)^2 = F(2)-F(1);
+        % sol(2) N(3)-N(1) + sol(3) N(3)^2-N(1)^2 = F(3)-F(1);
+        T1 = divide( F(2)-F(1), N(2)-N(1) );
+        T2 = divide( F(3)-F(1), N(3)-N(1) );
+        % sol(2) + sol(3) N(2)+N(1) = T1;
+        % sol(2) + sol(3) N(3)+N(1) = T2;
+        %          sol(3) N(3)-N(2) = T2-T1;
+        sol(3) = divide( T2-T1, N(3)-N(2) );
+        sol(2) = mod( T1-sol(3)*(N(1)+N(2)), 251 );
+        sol(1) = mod( F(1)-sol(3)*N(1)^2-sol(2)*N(1), 251 );
     else
         % Initial matrix
         L(:, K+1) = F;
@@ -29,12 +29,12 @@ function sol = Solve_Eq(K, N, F)
         L(:, 1) = 1;
 
         for i = 3:K
-            L(:,i) = L(:,i-1).*L(:,2);
+            L(:,i) = L(:,i-1) .* L(:,2);
         end
 
         % Make the matrix upper triangle
         for i = 1:K-1
-            while( sum(L(i+1:K,i)) ~= 0 )
+            while( sum( L(i+1:K,i) ) ~= 0 )
                 tmp = i;
                 for j = i+1:K
                     if( L(j,i) < 0 )

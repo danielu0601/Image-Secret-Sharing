@@ -41,14 +41,14 @@ for i = 1:w
         end
     end
 end
-input.S = sort(input.S);
+% input.S = sort(input.S);
 
 input.input_path  = '../';
 input.input_file  = 'Lenna.bmp';
 input.output_path = '../result_d_02/';
 input.output_file = 'result';
 
-Encrypt_P_D(input);
+% Encrypt_P_D(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
