@@ -52,7 +52,7 @@ function sol = Solve_Eq(K, N, F)
 %                     %L(j,:) = L(j,:) - tmp * L(i,:);
 %                     L(j,:) = L(j,:) - L(i,:) * floor(L(j,i) / L(i,i));
 %                 end
-                L(i+1:K,:) = L(i+1:K,:) - L(i,:) .* floor(L(i+1:K,i) / L(i,i));
+                L(i+1:K,:) = mod(L(i+1:K,:) - L(i,:) .* floor(L(i+1:K,i) / L(i,i)), 251);
             end
         end
 

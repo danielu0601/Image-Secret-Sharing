@@ -48,7 +48,7 @@ input.input_file  = 'Lenna.bmp';
 input.output_path = '../result_d_02/';
 input.output_file = 'result';
 
-% Encrypt_P_D(input);
+Encrypt_P_D(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

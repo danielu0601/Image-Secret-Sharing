@@ -13,12 +13,7 @@ function Encrypt_P_D( input )
     
     N = input.N;
     S = input.S;
-    
-    % Set parameter for search S
-    global now;
-    now = 1;
-    % Remember to clear before leave Enc
-    
+        
     % Read in files,
     [~,~,~] = mkdir(output_path);
     input_img = imread([input_path input_file]);
@@ -181,24 +176,13 @@ function Encrypt_P_D( input )
 %         end
     end
 %     subplot(2, 1, 1);plot(C(1:2048));axis([-inf, inf, 0, 255]);
-    clear now;
 end
 
 function out = Check_S( S, i, P )
 % Return true if 'i' is in sensitive area
-    global now
     i = mod(i, P);
     if( i == 0 )
         i = P;
-    end
-    if S(now) == i
-        now = now+1;
-        if now == length(S)
-            now = 1;
-        end
-        out = true;
-    else
-        out = false;
     end
     out = sum( find( S == i ) );
 end

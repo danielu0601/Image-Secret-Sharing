@@ -14,11 +14,6 @@ function Decrypt_P_D(input, K)
     height_s = height/8;
     width_s = width/8;
     
-    % Set parameter for search S
-    global now
-    now = 1;
-    % Remember to clear before leave Enc
-    
     N = 1:K;
     % Read in files, turns back into 1D array
 %     input_img(K, width) = 0;
@@ -169,24 +164,13 @@ function Decrypt_P_D(input, K)
 %     if dsp
 %         imshow(output_img);
 %     end
-    clear now;
 end
 
 function out = Check_S( S, i, P )
 % Return true if 'i' is in sensitive area
-    global now
     i = mod(i, P);
     if( i == 0 )
         i = P;
     end
-    if S(now) == i
-        now = now+1;
-        if now == length(S)
-            now = 1;
-        end
-        out = true;
-    else
-        out = false;
-    end
-%     out = sum( find( S == i ) );
+    out = sum( find( S == i ) );
 end
