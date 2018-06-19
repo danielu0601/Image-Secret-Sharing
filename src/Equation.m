@@ -1,6 +1,6 @@
 function output = Equation(coef,x)
 %EQUATION Evaluate the equation value
-%   Calculate the equation f(x) = c0 + c1x^1 + c2x^2 + ...
+%   Calculate the equation f(1) = c0 + c1x^1 + c2x^2 + ... mod p
     p = 251;
     w = length(coef);
     output = 0;

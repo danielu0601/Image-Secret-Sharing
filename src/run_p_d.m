@@ -11,9 +11,9 @@ input.QT = [8 5 3 3 2 1 1 1;
             1 1 1 1 1 1 1 1;
             1 1 1 1 1 1 1 1;
             1 1 1 1 1 1 1 1];
-input.Z = [ 1  2  9 17 10  3  4 11 18 25 33 26 19 12  5  6,...
-           13 20 27 34 41 49 42 35 28 21 14  7  8 15 22 29,...
-           36 43 50 57 58 51 44 37 30 23 16 24 31 38 45 52,...
+input.Z = [ 1  2  9 17 10  3  4 11 18 25 33 26 19 12  5  6 ...
+           13 20 27 34 41 49 42 35 28 21 14  7  8 15 22 29 ...
+           36 43 50 57 58 51 44 37 30 23 16 24 31 38 45 52 ...
            59 60 53 46 39 32 40 47 54 61 62 55 48 56 63 64];
 
 input.N = 9;
@@ -41,13 +41,14 @@ for i = 1:w
         end
     end
 end
+input.S = sort(input.S);
 
 input.input_path  = '../';
 input.input_file  = 'Lenna.bmp';
 input.output_path = '../result_d_02/';
 input.output_file = 'result';
 
-%Encrypt_P_D(input);
+% Encrypt_P_D(input);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -55,8 +56,8 @@ input.input_path  = input.output_path;
 input.input_file  = input.output_file;
 input.output_file = 'dec';
 
-% for K = 1:9
-for K = 8 %15sec
+for K = 1:9
+% for K = 8 %17sec
     Decrypt_P_D(input, K);
 end
 

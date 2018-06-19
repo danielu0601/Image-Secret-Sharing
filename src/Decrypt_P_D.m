@@ -14,6 +14,11 @@ function Decrypt_P_D(input, K)
     height_s = height/8;
     width_s = width/8;
     
+    % Set parameter for search S
+    global now
+    now = 1;
+    % Remember to clear before leave Enc
+    
     N = 1:K;
     % Read in files, turns back into 1D array
 %     input_img(K, width) = 0;
@@ -62,7 +67,7 @@ function Decrypt_P_D(input, K)
                     % Find if overlap with sensitive area
                     flag = 0;
                     for new_i = offset_C:offset_C+R-1
-                        if( Check_S( S, new_i ) )
+                        if( Check_S( S, new_i, height_s*width_s ) )
                             flag = 1;
                             break;
                         end
@@ -77,7 +82,7 @@ function Decrypt_P_D(input, K)
                             offset_C = new_i;
                         end
                         % Solve share for sensitive part
-                        while( Check_S( S, offset_C ) )
+                        while( Check_S( S, offset_C, height_s*width_s ) )
                             % Sensitive area
                             zz = Solve_Eq(K, 1:K, input_img(1:K, offset_i));
                             C(offset_C) = zz(1);
@@ -164,13 +169,24 @@ function Decrypt_P_D(input, K)
 %     if dsp
 %         imshow(output_img);
 %     end
+    clear now;
 end
 
-function out = Check_S( S, i )
+function out = Check_S( S, i, P )
 % Return true if 'i' is in sensitive area
-    i = mod(i, 64*64);
+    global now
+    i = mod(i, P);
     if( i == 0 )
-        i = 64*64;
+        i = P;
     end
-    out = sum( find( S == i ) );
+    if S(now) == i
+        now = now+1;
+        if now == length(S)
+            now = 1;
+        end
+        out = true;
+    else
+        out = false;
+    end
+%     out = sum( find( S == i ) );
 end

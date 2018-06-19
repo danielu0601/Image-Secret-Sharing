@@ -1,6 +1,6 @@
 function Encrypt_P_D( input )
 %Encrypt_Progressive Encrypt the image into N shares with sensitive area
-% Get parameter
+    % Get parameter
 %     dsp         = input.dsp;
     QT          = input.QT;
     Z           = input.Z;
@@ -13,6 +13,11 @@ function Encrypt_P_D( input )
     
     N = input.N;
     S = input.S;
+    
+    % Set parameter for search S
+    global now;
+    now = 1;
+    % Remember to clear before leave Enc
     
     % Read in files,
     [~,~,~] = mkdir(output_path);
@@ -78,7 +83,7 @@ function Encrypt_P_D( input )
     K = [ 0 1 2 3 5 10 21 62 64];
     % DC
     while i < height_s*width_s*K(2)
-        if( Check_S( S, i ) || Check_S( S, i+1 ) )
+        if( Check_S( S, i, height_s*width_s ) || Check_S( S, i+1, height_s*width_s ) )
             % Sensitive area
             tmp = [C(i:i+1) randi(250,1,N-2)];
             for x = 1:N
@@ -102,7 +107,7 @@ function Encrypt_P_D( input )
             flag = 0;
             for new_i = i:i+R-1
 %             for new_i = i:i+2
-                if( Check_S( S, new_i ) )
+                if( Check_S( S, new_i, height_s*width_s ) )
                     flag = 1;
                     break;
                 end
@@ -120,7 +125,7 @@ function Encrypt_P_D( input )
                     i = new_i;
                 end
                 % Do share for sensitive part
-                while( Check_S( S, i ) )
+                while( Check_S( S, i, height_s*width_s ) )
                     % Sensitive area
                     tmp = [C(i) randi(250,1,N-1)];
                     for x = 1:N
@@ -176,10 +181,24 @@ function Encrypt_P_D( input )
 %         end
     end
 %     subplot(2, 1, 1);plot(C(1:2048));axis([-inf, inf, 0, 255]);
+    clear now;
 end
 
-function out = Check_S( S, i )
+function out = Check_S( S, i, P )
 % Return true if 'i' is in sensitive area
-    i = mod(i, 64*64);
+    global now
+    i = mod(i, P);
+    if( i == 0 )
+        i = P;
+    end
+    if S(now) == i
+        now = now+1;
+        if now == length(S)
+            now = 1;
+        end
+        out = true;
+    else
+        out = false;
+    end
     out = sum( find( S == i ) );
 end
